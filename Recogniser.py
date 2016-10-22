@@ -1,5 +1,6 @@
 import sys
-import time 
+import time
+import operator
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -29,7 +30,8 @@ class Recognizer(object):
         capture = cv2.VideoCapture(0)
         start = time.time()
         time.clock()
-        disp_emotion = []
+        disp_major_emotion = []
+        disp_minor_emotion = []
         cache = list(dict())
         cache_emop = []
 
@@ -44,8 +46,9 @@ class Recognizer(object):
                 emotion = self._emotion_dictionary[prediction]
 
                 # Added multiple user record space for their emotion
-                while len(disp_emotion) <= i:
-                    disp_emotion.append('neutral')
+                while len(disp_major_emotion) <= i:
+                    disp_major_emotion.append('neutral')
+                    disp_minor_emotion.append('')
 
                 # Added multiple user emotion cache
                 while len(cache) <= i:
@@ -56,16 +59,32 @@ class Recognizer(object):
                     if i == 0:
                         cache_emop = []
 
-                    max_count = 0
+
                     logging.info('cache has %s', cache)
-                    for _emotion, _count in cache[i].items():
-                        if _count > max_count:
-                            disp_emotion[i] = _emotion
-                            max_count = _count
+                    # Fetch Emotion Ranking
+                    sorted_emotion = sorted(cache[i].items(), key=operator.itemgetter(1), reverse=True)
+                    disp_major_emotion[i] = sorted_emotion[0][0]
+                    if len(sorted_emotion) > 1 and sorted_emotion[1][1] > 0:
+                        disp_minor_emotion[i] = sorted_emotion[1][0] + '?'
+                    else:
+                        disp_minor_emotion[i] = ''
 
-                    cv2.putText(color_frame, str(disp_emotion[i]), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+                    print disp_major_emotion[i], disp_minor_emotion[i]
 
-                    cache_emop.append((x, y))
+                    # major_max_count = 0
+                    # for _emotion, _count in cache[i].items():
+                    #     if _count > major_max_count:
+                    #         disp_major_emotion[i] = _emotion
+                    #         major_max_count = _count
+                    # minor_max_count = 0
+
+                    major_text_color = (0, 0, 255)
+                    minor_text_color = (50, 50, 150)
+                    text_font = cv2.FONT_HERSHEY_SIMPLEX
+                    cv2.putText(color_frame, str(disp_major_emotion[i]), (x, y), text_font, 1, major_text_color, 3)
+                    cv2.putText(color_frame, str(disp_minor_emotion[i]), (x, y - 40), text_font, 0.8, minor_text_color, 2)
+
+                    # cache_emop.append((x, y))
                     # print "pic %s analysis Emotion: %10s | Confidence: %10f" % (i, disp_emotion[i], confidence)
                     
                     if i == len(results) - 1:
@@ -73,19 +92,23 @@ class Recognizer(object):
 
                     start = time.time()
                 else:
-                    cv2.putText(color_frame, str(disp_emotion[i]), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+                    major_text_color = (0, 0, 255)
+                    minor_text_color = (50, 50, 150)
+                    text_font = cv2.FONT_HERSHEY_SIMPLEX
+                    cv2.putText(color_frame, str(disp_major_emotion[i]), (x, y), text_font, 1, major_text_color, 3)
+                    cv2.putText(color_frame, str(disp_minor_emotion[i]), (x, y - 40), text_font, 0.8, minor_text_color, 2)
                     # print "pic %s analysis Emotion: %10s | Confidence: %10f" % (i, disp_emotion[i], confidence)
                     if cache[i].get(emotion, None) is None:
-                        cache[i][emotion] = (20000 - confidence) // 1000
+                        cache[i][emotion] = pow((16000 - confidence) // 1000, 2)
                     else:
-                        cache[i][emotion] += (20000 - confidence) // 1000
+                        cache[i][emotion] += pow((16000 - confidence) // 1000, 2)
 
-            if len(results) == 0:
-                # logging.debug('emopo: %s', cache_emop)
-                for i, emp in enumerate(cache_emop):
-                    if i >= len(disp_emotion):
-                        break
-                    cv2.putText(color_frame, str(disp_emotion[i]), (emp[0], emp[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+            # if len(results) == 0:
+            #     # logging.debug('emopo: %s', cache_emop)
+            #     for i, emp in enumerate(cache_emop):
+            #         if i >= len(disp_major_emotion):
+            #             break
+            #         cv2.putText(color_frame, str(disp_major_emotion[i]), (emp[0], emp[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
 
             cv2.imshow('face', color_frame)
             k = cv2.waitKey(10) & 0xff

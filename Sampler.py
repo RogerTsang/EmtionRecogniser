@@ -29,14 +29,19 @@ class Sampler(object):
         is_overlap = False
         for i, (x, y, w, h) in enumerate(detected_faces):
             # Detect Face Overlap
-            if len(overlap) == 0:
-                overlap.append((x, y, w, h))
-            else:
-                for (ox, oy, ow, oh) in overlap:
-                    if ox < x < ox + ow and oy < y < oy + oh:
-                        is_overlap = True
+            overlap.append((x, y, w, h))
+            for (ox, oy, ow, oh) in overlap:
+                if ox < x < ox + ow and oy < y < oy + oh:
+                    is_overlap = True
+                elif ox < x + w < ox + ow and oy < y < oy + oh:
+                    is_overlap = True
+                elif ox < x < ox + ow and oy < y + h + oy + oh:
+                    is_overlap = True
+                elif ox < x + w < ox + ow and oy < y + h < oy + oh:
+                    is_overlap = True
 
             if is_overlap:
+                logger.debug("Faces Overlap")
                 continue
 
             # Outline Face
