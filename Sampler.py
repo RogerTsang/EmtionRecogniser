@@ -24,8 +24,21 @@ class Sampler(object):
         detected_faces = self._face_cascade.detectMultiScale(gray_frame, 1.25, 5)
         # gray_frame = cv2.equalizeHist(gray_frame)
         result = []
+        overlap = []
 
+        is_overlap = False
         for i, (x, y, w, h) in enumerate(detected_faces):
+            # Detect Face Overlap
+            if len(overlap) == 0:
+                overlap.append((x, y, w, h))
+            else:
+                for (ox, oy, ow, oh) in overlap:
+                    if ox < x < ox + ow and oy < y < oy + oh:
+                        is_overlap = True
+
+            if is_overlap:
+                continue
+
             # Outline Face
             cv2.rectangle(color_frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 

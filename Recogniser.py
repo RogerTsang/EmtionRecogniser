@@ -8,7 +8,7 @@ from config import *
 from Sampler import *
 
 # Recognising is the third stage of the program
-# It creates a Fisherface recogniser
+# It creates a recogniser
 # Trains it with the classified emotions from the data set
 # Then predict the current emotion in the video
 
@@ -75,11 +75,10 @@ class Recognizer(object):
                 else:
                     cv2.putText(color_frame, str(disp_emotion[i]), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
                     # print "pic %s analysis Emotion: %10s | Confidence: %10f" % (i, disp_emotion[i], confidence)
-                    
                     if cache[i].get(emotion, None) is None:
-                        cache[i][emotion] = 1
-                    else:    
-                        cache[i][emotion] += 1
+                        cache[i][emotion] = (20000 - confidence) // 1000
+                    else:
+                        cache[i][emotion] += (20000 - confidence) // 1000
 
             if len(results) == 0:
                 # logging.debug('emopo: %s', cache_emop)
