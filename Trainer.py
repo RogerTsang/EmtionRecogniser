@@ -5,7 +5,6 @@ import numpy as np
 import os
 
 import logging
-# logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 logger.info('Start')
@@ -24,12 +23,12 @@ class Trainer(object):
             if major == '3':
                 self._recogniser = cv2.face.createFisherFaceRecognizer()
             else:
-               self._recogniser = cv2.createFisherFaceRecognizer() 
+                self._recogniser = cv2.createFisherFaceRecognizer()
         elif recogniser == 'Eigen':
             if major == '3':
                 self._recogniser = cv2.face.createEigenFaceRecognizer()
             else:
-               self._recogniser = cv2.createEigenFaceRecognizer() 
+                self._recogniser = cv2.createEigenFaceRecognizer()
             
     def get_recognizer(self, retrain_flag=True):
 
@@ -57,7 +56,7 @@ class Trainer(object):
 
         # Fetch Emotion Images From Desired Folders
         for emotion_group in emotion_table.viewkeys():
-            file_path = os.path.join(CKPath_Root, os.path.join(CKPath_Dispatched,os.path.join(emotion_group,'*')))
+            file_path = os.path.join(CKPath_Root, os.path.join(CKPath_Dispatched, os.path.join(emotion_group, '*')))
             logging.debug(file_path)
 
             file_group = glob.glob(file_path)

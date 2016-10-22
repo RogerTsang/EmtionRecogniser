@@ -1,9 +1,9 @@
-import os
 import glob
 import cv2
 import numpy as np
 
 from config import *
+
 
 class Processor(object):
     def __init__(self):
