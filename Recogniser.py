@@ -1,6 +1,4 @@
-import cv2
 import sys
-import numpy as np
 import time 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -27,7 +25,6 @@ class Recognizer(object):
 
     def __call__(self):
         # Prediction on Video
-        not_detected = cv2.imread("Not_Detected.png")
         recogniser = self._trainer.get_recognizer(self._retrain_flag)
         capture = cv2.VideoCapture(0)
         start = time.time()
@@ -53,7 +50,7 @@ class Recognizer(object):
                     disp_emotion.append('neutral')
 
                 while len(cache) <= i:
-                    cache.append({'neutral':0})
+                    cache.append({'neutral': 0})
 
                 if second >= 1:
                     if i == 0:
@@ -85,7 +82,7 @@ class Recognizer(object):
                         cache[i][emotion] += 1
 
             if len(results) == 0:
-                logging.debug('emopo: %s', cache_emop)
+                # logging.debug('emopo: %s', cache_emop)
                 for i, emp in enumerate(cache_emop):
                     if i >= len(disp_emotion):
                         break
@@ -96,7 +93,7 @@ class Recognizer(object):
             if k == 27:
                 capture.release()
                 cv2.destroyAllWindows()
-                return 'peter cai'
+                return 0
 
 if __name__ == '__main__':
     # rt_flag = False

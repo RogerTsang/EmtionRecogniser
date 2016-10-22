@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 logger.info('Start')
 
 import config
-from config import CKPath_Dispatched, CKPath_Root
+from config import CKPath_Dispatched, CKPath_Root, TRAINING_CACHE, CWD
 emotion_table = config.emotion_table
 
 class Trainer(object):
-    def __init__(self,recogniser):
+    def __init__(self, recogniser):
         self._recogniser = None
         self._recname = recogniser
         
@@ -31,10 +31,10 @@ class Trainer(object):
             else:
                self._recogniser = cv2.createEigenFaceRecognizer() 
             
-    def get_recognizer(self,retrain_flag = True):
+    def get_recognizer(self, retrain_flag=True):
 
         # Check If Trainer Has Cached Previous Result on the File System
-        state_file = os.path.join(CKPath_Root, TRAINING_CACHE)
+        state_file = os.path.join(CWD, TRAINING_CACHE)
         if not os.path.isfile(state_file) or retrain_flag:
             is_trained = False
             self.train(emotion_table, is_trained)
@@ -46,9 +46,7 @@ class Trainer(object):
 
         return self._recogniser
 
-
-    def train(self,emotion_table, is_trained=False):
-
+    def train(self, emotion_table, is_trained=False):
         # Initialise FisherFace recognizer and training pair
         global recogniser
 
@@ -78,4 +76,5 @@ class Trainer(object):
         # Save Recogniser Model State
 
 if __name__ == '__main__':
-    get_recognizer()
+    tn = Trainer(recogniser='Fisher')
+    tn.get_recognizer()

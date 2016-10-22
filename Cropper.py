@@ -42,7 +42,7 @@ def main():
                 face_classified = face_cascade.detectMultiScale(face_image, 1.25, 5)
                 for (x, y, w, h) in face_classified:
                     # Crop Faces Out From Images
-                    cropped_image = face_image[y:y+h, x:x+h]
+                    cropped_image = face_image[y:y+h, x:x+w]
 
                     # Output Image needs to be the same size for FisherFace Recogniser
                     output_image = cv2.resize(cropped_image, (OUTPUT_IMAGE_SIZE, OUTPUT_IMAGE_SIZE))

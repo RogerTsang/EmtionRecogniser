@@ -14,7 +14,7 @@ emotion_table = {"neutral": 0, "anger": 1, "happy": 5, "sadness": 6}
 CWD = os.path.dirname(__file__)
 
 # The CK database root directory
-CKPath_Root = "C:/Users/zengh/Documents/CVision"
+CKPath_Root = os.path.normpath("C:/Users/zengh/Documents/CVision")
 
 # The folder for storing original images in CK database
 CKPath_Images = "Images"
@@ -34,9 +34,13 @@ OUTPUT_IMAGE_SIZE_X = 256
 OUTPUT_IMAGE_SIZE_Y = 128
 
 # Haar-Cascade description files used for
-CASCADE_FACE = os.path.join(CKPath_Root, 'XML', 'haarcascade_frontalface_default.xml')
-CASCADE_MOUTH = os.path.join(CKPath_Root, 'XML', 'haarcascade_mouth.xml')
-CASCADE_EYE = os.path.join(CKPath_Root, 'XML', 'haarcascade_eye.xml')
+CASCADE_FACE = os.path.join(CWD, 'XML', 'haarcascade_frontalface_default.xml')
+CASCADE_MOUTH = os.path.join(CWD, 'XML', 'haarcascade_mouth.xml')
+CASCADE_EYE = os.path.join(CWD, 'XML', 'haarcascade_eye.xml')
+
+# Sampler and Processor Eye Offset
+EYES_OFFSET_X = 20
+EYES_OFFSET_Y = 10
 
 # Training Cache
 TRAINING_CACHE = "train.state"
