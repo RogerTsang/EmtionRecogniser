@@ -25,8 +25,8 @@ CKPath_Dispatched = "Dispatched"
 # The folder for storing emotion information in CK database
 CKPath_Emotion = "Emotion"
 
-# The threshold for recognising an emotion as other
-THRESHOLD = 512
+# The threshold for recognising an emotion as other (variance)
+THRESHOLD = 100
 
 # The image size used for training
 OUTPUT_IMAGE_SIZE = 256

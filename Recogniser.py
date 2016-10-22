@@ -59,17 +59,24 @@ class Recognizer(object):
                     if i == 0:
                         cache_emop = []
 
-
                     logging.info('cache has %s', cache)
                     # Fetch Emotion Ranking
                     sorted_emotion = sorted(cache[i].items(), key=operator.itemgetter(1), reverse=True)
-                    disp_major_emotion[i] = sorted_emotion[0][0]
-                    if len(sorted_emotion) > 1 and sorted_emotion[1][1] > 0:
+                    var_emotion = np.var(cache[i].values())
+
+                    # Check if the emotion can be recognised or not
+                    if var_emotion >= THRESHOLD or var_emotion == 0:
+                        disp_major_emotion[i] = sorted_emotion[0][0]
+                    else:
+                        disp_major_emotion[i] = '???'
+
+                    # Check if the minor emotion should be the major guess
+                    if var_emotion < THRESHOLD and var_emotion != 0:
+                        disp_minor_emotion[i] = sorted_emotion[0][0] + '?'
+                    elif len(sorted_emotion) > 1 and sorted_emotion[1][1] > 0:
                         disp_minor_emotion[i] = sorted_emotion[1][0] + '?'
                     else:
                         disp_minor_emotion[i] = ''
-
-                    print disp_major_emotion[i], disp_minor_emotion[i]
 
                     # major_max_count = 0
                     # for _emotion, _count in cache[i].items():
@@ -77,12 +84,12 @@ class Recognizer(object):
                     #         disp_major_emotion[i] = _emotion
                     #         major_max_count = _count
                     # minor_max_count = 0
-
-                    major_text_color = (0, 0, 255)
-                    minor_text_color = (50, 50, 150)
-                    text_font = cv2.FONT_HERSHEY_SIMPLEX
-                    cv2.putText(color_frame, str(disp_major_emotion[i]), (x, y), text_font, 1, major_text_color, 3)
-                    cv2.putText(color_frame, str(disp_minor_emotion[i]), (x, y - 40), text_font, 0.8, minor_text_color, 2)
+                    #
+                    # major_text_color = (0, 0, 255)
+                    # minor_text_color = (50, 50, 150)
+                    # text_font = cv2.FONT_HERSHEY_SIMPLEX
+                    # cv2.putText(color_frame, str(disp_major_emotion[i]), (x, y), text_font, 1, major_text_color, 3)
+                    # cv2.putText(color_frame, str(disp_minor_emotion[i]), (x, y - 40), text_font, 0.8, minor_text_color, 2)
 
                     # cache_emop.append((x, y))
                     # print "pic %s analysis Emotion: %10s | Confidence: %10f" % (i, disp_emotion[i], confidence)
@@ -92,16 +99,18 @@ class Recognizer(object):
 
                     start = time.time()
                 else:
-                    major_text_color = (0, 0, 255)
-                    minor_text_color = (50, 50, 150)
-                    text_font = cv2.FONT_HERSHEY_SIMPLEX
-                    cv2.putText(color_frame, str(disp_major_emotion[i]), (x, y), text_font, 1, major_text_color, 3)
-                    cv2.putText(color_frame, str(disp_minor_emotion[i]), (x, y - 40), text_font, 0.8, minor_text_color, 2)
                     # print "pic %s analysis Emotion: %10s | Confidence: %10f" % (i, disp_emotion[i], confidence)
                     if cache[i].get(emotion, None) is None:
                         cache[i][emotion] = pow((16000 - confidence) // 1000, 2)
                     else:
                         cache[i][emotion] += pow((16000 - confidence) // 1000, 2)
+
+            for i in range(len(results)):
+                major_text_color = (0, 0, 255)
+                minor_text_color = (50, 50, 150)
+                text_font = cv2.FONT_HERSHEY_SIMPLEX
+                cv2.putText(color_frame, str(disp_major_emotion[i]), (x, y), text_font, 1, major_text_color, 3)
+                cv2.putText(color_frame, str(disp_minor_emotion[i]), (x, y - 40), text_font, 0.8, minor_text_color, 2)
 
             # if len(results) == 0:
             #     # logging.debug('emopo: %s', cache_emop)
