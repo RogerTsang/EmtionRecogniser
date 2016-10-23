@@ -85,11 +85,11 @@ class Recognizer(object):
                     #         major_max_count = _count
                     # minor_max_count = 0
                     #
-                    # major_text_color = (0, 0, 255)
-                    # minor_text_color = (50, 50, 150)
-                    # text_font = cv2.FONT_HERSHEY_SIMPLEX
-                    # cv2.putText(color_frame, str(disp_major_emotion[i]), (x, y), text_font, 1, major_text_color, 3)
-                    # cv2.putText(color_frame, str(disp_minor_emotion[i]), (x, y - 40), text_font, 0.8, minor_text_color, 2)
+                    major_text_color = (0, 0, 255)
+                    minor_text_color = (50, 50, 150)
+                    text_font = cv2.FONT_HERSHEY_SIMPLEX
+                    cv2.putText(color_frame, str(disp_major_emotion[i]), (x, y), text_font, 1, major_text_color, 3)
+                    cv2.putText(color_frame, str(disp_minor_emotion[i]), (x, y - 40), text_font, 0.8, minor_text_color, 2)
 
                     # cache_emop.append((x, y))
                     # print "pic %s analysis Emotion: %10s | Confidence: %10f" % (i, disp_emotion[i], confidence)
