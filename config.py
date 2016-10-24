@@ -25,6 +25,9 @@ CKPath_Dispatched = "Dispatched"
 # The folder for storing emotion information in CK database
 CKPath_Emotion = "Emotion"
 
+# The folder containing benchmark samples
+CKPath_Benchmark = "Benchmark"
+
 # The threshold for recognising an emotion as other (variance)
 THRESHOLD = 100
 

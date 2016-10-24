@@ -134,6 +134,7 @@ class Sampler(object):
             result = self.extract(color_frame)
 
             if len(result) == 0:
+                cv2.imshow('face', color_frame)
                 continue
 
             grey_resize, _, _ = result[0]

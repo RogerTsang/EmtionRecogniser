@@ -125,6 +125,38 @@ class Recognizer(object):
                 capture.release()
                 cv2.destroyAllWindows()
                 return 0
+                
+    def eval(self, image, correct_emotion):
+        results = self._sampler.extract(color_frame)
+        emotion = None
+        for i, (gray_resize, x, y) in enumerate(results):
+            prediction, confidence = recogniser.predict(gray_resize)
+            emotion = self._emotion_dictionary[prediction]
+        if emotion is None:
+            return 2
+
+        return 1 if emotion == correct_emotion else 0
+
+    def benchmark(self, filepath=os.path.join(CKPath_Root, CKPath_Benchmark)):
+        benchmark_flies = glob.glob(os.path.join(filepath, '*'))
+        predict_true = 0
+        predict_false = 0
+        not_reco = 0
+
+        for file in benchmark_flies:
+            emotion = os.path.basename(file)
+            for images in glob.glob(os.path.join(file, '*')):
+                image = cv2.imread(images)
+                res = self.eval(image, emotion)
+                if res == 1:
+                    predict_true += 1
+                elif res == 0:
+                    predict_false += 1
+                else:
+                    not_reco += 1
+
+        print("Rate of success: ", predict_true/(predict_true + predict_false))
+        print("%s miss" % not_reco)
 
 if __name__ == '__main__':
     # rt_flag = False
