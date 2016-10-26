@@ -1,8 +1,9 @@
 #!/usr/bin/python
-
+import glob
 import cv2
 import os
 import numpy as np
+import time
 
 from config import *
 from Sampler import Sampler
@@ -11,21 +12,21 @@ from Trainer import Trainer
 class Tester(object):
     def __init__(self, s, t):
         self._sampler = s
+        self._emotion_confused = emotion_confused
         self._emotion_dictionary = emotions
-        # self._recogniser = t.get_recognizer(False)
-        self._recogniser = None
+        self._recogniser = t.get_recognizer(False)
 
     def eval(self, image, correct_emotion):
-        results = self._sampler.extract(color_frame)
+        results = self._sampler.extract(image)
         emotion = None
         correct = None
         for i, (gray_resize, x, y) in enumerate(results):
-            prediction, confidence = self.recogniser.predict(gray_resize)
+            prediction, confidence = self._recogniser.predict(gray_resize)
             emotion = self._emotion_dictionary[prediction]
             if(emotion == correct_emotion):
                 correct = True
             else:
-                corrent = False
+                correct = False
 
         return (emotion, correct)
 
@@ -51,17 +52,23 @@ class Tester(object):
                     predict_false += 1
                 else:
                     not_reco += 1
+                    continue
 
-                confusion_matrix[emotion][pred_emotion] += 1
+                confusion_matrix[self._emotion_confused[emotion]][self._emotion_confused[pred_emotion]] += 1
 
-        print("Rate of success: ", predict_true/(predict_true + predict_false))
+        if predict_true + predict_false > 0:
+            print("Rate of success: ", predict_true * 1.0/(predict_true + predict_false))
         print("%s miss" % not_reco)
+        print(confusion_matrix)
 
     def live_test(self):
         capture = cv2.VideoCapture(0)
         confusion_matrix = list(list())
-        recogniser = self._trainer.get_recognizer(False)
+
         cache = dict({'neutral':0})
+        not_reco = 0
+        predict_true = 0
+        predict_false = 0
 
         for i in range(5):
             confusion_matrix.append([0] * 5)
@@ -74,16 +81,18 @@ class Tester(object):
             results = self._sampler.extract(color_frame)
 
             for i, (gray_resize, x, y) in enumerate(results):
-                prediction, confidence = recogniser.predict(gray_resize)
+                prediction, confidence = self._recogniser.predict(gray_resize)
                 emotion = self._emotion_dictionary[prediction]
 
                 if time.time() - start >= 1:
                     cache = dict({'neutral':0})
+                    start = time.time()
                 else:
                     if cache.get(emotion, None) is None:
                         cache[emotion] = 1
                     else:
                         cache[emotion] += 1
+
 
             cv2.imshow('face', color_frame)
             k = cv2.waitKey(30) & 0xff
@@ -98,6 +107,7 @@ class Tester(object):
                         count = item
 
                 if count == 0:
+                    not_reco += 1
                     continue
 
                 if correct_emotion == pred_emotion:
@@ -105,46 +115,22 @@ class Tester(object):
                 else:
                     predict_false += 1
 
-                confusion_matrix[correct_emotion][pred_emotion] += 1
+                confusion_matrix[self._emotion_confused[emotion]][self._emotion_confused[pred_emotion]] += 1
 
             elif k == 27:
                 capture.release()
                 cv2.destroyAllWindows()
-                print("Rate of success: ", predict_true/(predict_true + predict_false))
-                return confusion_matrix
+                if predict_true + predict_false <= 0:
+                    print("%s miss" % not_reco)
+                    return
 
-    def dummy_output(self, totalInput=50, accuracy=0.7):
-        confusion_matrix = list(list())
-        correct_count = 0
-        incorrect_count = 0
-
-        for i in range(5):
-            confusion_matrix.append([0] * 5)
-
-        # neutral, anger, sadness, happy, other
-# neutral
-# anger
-# sadness
-# happy
-# other
-        made_up_data = [
-            [7,1,2,0,0],
-            [0,9,0,0,1],
-            [4,0,5,1,0],
-            [1,0,0,8,1],
-            [2,2,1,1,5]
-        ]
-
-        correct = 34.0
-        total = 50.0
-
-        print("Rate of success %s" % (correct/total))
-        print("miss 0")
-        print made_up_data
+                print("Rate of success: ", predict_true * 1.0/(predict_true + predict_false))
+                print("%s miss" % not_reco)
+                print(confusion_matrix)
+            
 
 if __name__ == '__main__':
-    s = Sampler()
-    t = Trainer('Eigen')
-    tes = Tester(s,t)
-
-    tes.dummy_output()
+    # s = Sampler()
+    # t = Trainer('Eigen')
+    # tes = Tester(s,t)
+    # tes.static_test()

@@ -75,5 +75,5 @@ class Trainer(object):
         # Save Recogniser Model State
 
 if __name__ == '__main__':
-    tn = Trainer(recogniser='Fisher')
-    tn.get_recognizer()
+    tn = Trainer(recogniser='Eigen')
+    tn.get_recognizer(True)

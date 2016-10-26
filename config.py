@@ -10,11 +10,14 @@ emotions = {0:"neutral", 1:"anger", 2:"contempt", 3:"disgust", 4:"fear", 5:"happ
 emotion_table = {"neutral": 0, "anger": 1, "happy": 5, "sadness": 6}
 #{"neutral": 0, "anger": 1, "contempt": 2, "disgust": 3, "fear": 4, "happy": 5, "sadness": 6, "surprise": 7}
 
+# The emotion dictionary for confuse matrix
+emotion_confused = {"neutral": 0, "anger": 1, "happy": 2, "sadness": 3, "contempt": 4, "disgust": 4, "surprise": 4, "fear": 4, "other": 4}
+
 # The current working directory
 CWD = os.path.dirname(__file__)
 
 # The CK database root directory
-CKPath_Root = os.path.normpath("C:/Users/zengh/Documents/CVision")
+CKPath_Root = os.path.normpath(".")
 
 # The folder for storing original images in CK database
 CKPath_Images = "Images"
