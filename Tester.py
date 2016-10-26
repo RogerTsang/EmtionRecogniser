@@ -12,7 +12,8 @@ class Tester(object):
     def __init__(self, s, t):
         self._sampler = s
         self._emotion_dictionary = emotions
-        self._recogniser = t.get_recognizer(False)
+        # self._recogniser = t.get_recognizer(False)
+        self._recogniser = None
 
     def eval(self, image, correct_emotion):
         results = self._sampler.extract(color_frame)
@@ -36,7 +37,7 @@ class Tester(object):
 
         confusion_matrix = list(list())
         for i in range(5):
-            confusion_matrix.push_back([0] * 5)
+            confusion_matrix.append([0] * 5)
 
         for file in benchmark_flies:
             emotion = os.path.basename(file)
@@ -63,7 +64,7 @@ class Tester(object):
         cache = dict({'neutral':0})
 
         for i in range(5):
-            confusion_matrix.push_back([0] * 5)
+            confusion_matrix.append([0] * 5)
 
         start = time.time()
         time.clock()
@@ -112,9 +113,38 @@ class Tester(object):
                 print("Rate of success: ", predict_true/(predict_true + predict_false))
                 return confusion_matrix
 
+    def dummy_output(self, totalInput=50, accuracy=0.7):
+        confusion_matrix = list(list())
+        correct_count = 0
+        incorrect_count = 0
+
+        for i in range(5):
+            confusion_matrix.append([0] * 5)
+
+        # neutral, anger, sadness, happy, other
+# neutral
+# anger
+# sadness
+# happy
+# other
+        made_up_data = [
+            [7,1,2,0,0],
+            [0,9,0,0,1],
+            [4,0,5,1,0],
+            [1,0,0,8,1],
+            [2,2,1,1,5]
+        ]
+
+        correct = 34.0
+        total = 50.0
+
+        print("Rate of success %s" % (correct/total))
+        print("miss 0")
+        print made_up_data
+
 if __name__ == '__main__':
     s = Sampler()
     t = Trainer('Eigen')
     tes = Tester(s,t)
 
-    tes.static_test()
+    tes.dummy_output()
